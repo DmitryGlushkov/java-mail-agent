@@ -1,0 +1,1 @@
+keytool.exe -importcert -file mailru.cert -alias mailru -keystore "C:\Program Files\Java\jdk1.8.0\jre\lib\security\cacerts"

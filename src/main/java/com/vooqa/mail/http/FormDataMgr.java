@@ -24,9 +24,11 @@ public class FormDataMgr {
             // get headers of every part
             byte[] headerDelimiter = new byte[]{13, 10, 13, 10};    // \r\n\r\n
             for (byte[] _b : parts) {
-                int position = indexOf(_b, headerDelimiter);
-                Map<String, String> params = getHeaderParameters(new String(Arrays.copyOfRange(_b, 0, position)));
-                byte[] partData = Arrays.copyOfRange(_b, position + 4, _b.length);  // -2: CRLF in the end of data
+                final int position = indexOf(_b, headerDelimiter);
+                final byte[] headersBytes = Arrays.copyOfRange(_b, 0, position);
+                final String headers = new String(headersBytes, "UTF-8");
+                final Map<String, String> params = getHeaderParameters(headers);
+                final byte[] partData = Arrays.copyOfRange(_b, position + 4, _b.length);  // -2: CRLF in the end of data
                 partsList.add(new Part(params.get("name"), partData, params.get("filename"), params.get("type")));
             }
             return partsList.stream().collect(Collectors.toMap(p -> p.name, p -> p));

@@ -21,7 +21,7 @@ public class MailRuAgent {
         this.login = configuration.mailBox();
         this.password = configuration.mailBoxPassword();
         this.session = Session.getInstance(getSessionProperties(smtpHost, smtpPort));
-        session.setDebug(true);
+        session.setDebug(false);
     }
 
     private Properties getSessionProperties(String host, Integer port) {
@@ -54,8 +54,9 @@ public class MailRuAgent {
         if (attachement != null && fileType != null) {
             MimeMultipart multipart = new MimeMultipart();
             MimeBodyPart bodyPart = new MimeBodyPart();
-            if(fileType.equals("text/plain")){
-                bodyPart.setContent(new String(attachement), fileType);
+            if (fileType.equals("text/plain")) {
+                final String content = new String(attachement, "UTF-8");
+                bodyPart.setContent(content, "text/plain; charset=UTF-8");
             } else {
                 bodyPart.setContent(attachement, fileType);
             }

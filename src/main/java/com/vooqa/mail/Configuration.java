@@ -2,6 +2,7 @@ package com.vooqa.mail;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.Properties;
 
 public class Configuration {
@@ -9,7 +10,7 @@ public class Configuration {
     private static Properties prop = new Properties();
 
     public Configuration(File file) throws Exception {
-        prop.load(new FileInputStream(file));
+        prop.load(new InputStreamReader(new FileInputStream(file),"UTF-8"));
     }
 
     public String adminMailBox() {
@@ -42,5 +43,9 @@ public class Configuration {
 
     public Boolean saveExcel() {
         return Boolean.parseBoolean(prop.getProperty("saveExcel"));
+    }
+
+    public String mailListFile() {
+        return prop.getProperty("mailListFile");
     }
 }

@@ -27,7 +27,7 @@ public class FormDataMgr {
                 int position = indexOf(_b, headerDelimiter);
                 Map<String, String> params = getHeaderParameters(new String(Arrays.copyOfRange(_b, 0, position)));
                 byte[] partData = Arrays.copyOfRange(_b, position + 4, _b.length);  // -2: CRLF in the end of data
-                partsList.add(new Part(params.get("name"), partData, params.get("filename")));
+                partsList.add(new Part(params.get("name"), partData, params.get("filename"), params.get("type")));
             }
             return partsList.stream().collect(Collectors.toMap(p -> p.name, p -> p));
         }
@@ -45,9 +45,12 @@ public class FormDataMgr {
                     String[] vals = p.split("=");
                     if(vals.length == 2) {
                         result.put(vals[0].trim(), vals[1].trim().replaceAll("\"", ""));
-                        System.out.println();
+                        System.out.println(); // Content-Disposition: form-data; name="file"; filename="gencfg.py"
                     }
                 }
+            } else if (line.startsWith("Content-Type")) {
+                String[] vals = line.split(":");
+                if (vals.length == 2) result.put("type", vals[1].trim());
             }
         }
         return result;

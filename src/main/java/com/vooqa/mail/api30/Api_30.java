@@ -5,7 +5,12 @@ import com.vooqa.mail.Configuration;
 
 public class Api_30 {
 
+    // application/x-www-form-urlencoded
+    // params: text; name; mail; gmail
     private final HttpHandler hMail;
+
+    // multipart/form-data
+    // parts: file(excel); email(recipient)
     private final HttpHandler hExcel;
 
     public Api_30(Configuration configuration) {

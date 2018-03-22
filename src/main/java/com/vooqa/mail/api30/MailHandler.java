@@ -22,11 +22,12 @@ public class MailHandler extends BaseHandler {
     }
 
     @Override
-    protected void doPost(HttpExchange httpExchange) throws Exception {
+    protected boolean doPost(HttpExchange httpExchange) throws Exception {
         Map<String, String> parameters = readParameters(httpExchange.getRequestBody());
         if (parameters != null && parameters.size() > 0) {
             Mail.agent(configuration).sendMessage(printEmailText(parameters));
         }
+        return true;
     }
 
     private Map<String, String> readParameters(InputStream in) throws Exception {

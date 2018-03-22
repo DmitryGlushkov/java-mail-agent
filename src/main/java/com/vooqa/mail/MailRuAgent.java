@@ -21,7 +21,7 @@ public class MailRuAgent {
         this.login = configuration.mailBox();
         this.password = configuration.mailBoxPassword();
         this.session = Session.getInstance(getSessionProperties(smtpHost, smtpPort));
-        session.setDebug(false);
+        session.setDebug(true);
     }
 
     private Properties getSessionProperties(String host, Integer port) {
@@ -36,14 +36,14 @@ public class MailRuAgent {
     }
 
     public void sendMessage(String text) throws Exception {
-        _mail(adminMailBox, text, "KUB APP MESSAGE", null, null);
+        _mail(adminMailBox, "KUB APP MESSAGE", text,null, null, null);
     }
 
-    public void sendFile(String to, String fileName, byte[] fileBody) throws Exception {
-        _mail(to, fileName, null, fileName, fileBody);
+    public void sendFile(String to, String fileName, byte[] fileBody, String fileType) throws Exception {
+        _mail(to, fileName, null, fileName, fileBody, fileType);
     }
 
-    private void _mail(String to, String subject, String text, String attachementName, byte[] attachement) throws Exception {
+    private void _mail(String to, String subject, String text, String attachementName, byte[] attachement, String fileType) throws Exception {
         Address[] recipients = new Address[]{new InternetAddress(to)};
         MimeMessage message = new MimeMessage(session);
         message.setFrom(new InternetAddress(login));
@@ -51,10 +51,14 @@ public class MailRuAgent {
         message.setSubject(subject);
         if (text != null) message.setText(text, "UTF-8");
         message.setSentDate(new Date());
-        if (attachement != null) {
+        if (attachement != null && fileType != null) {
             MimeMultipart multipart = new MimeMultipart();
             MimeBodyPart bodyPart = new MimeBodyPart();
-            bodyPart.setContent(attachement, "application/vnd.ms-excel");
+            if(fileType.equals("text/plain")){
+                bodyPart.setContent(new String(attachement), fileType);
+            } else {
+                bodyPart.setContent(attachement, fileType);
+            }
             bodyPart.setFileName(MimeUtility.encodeText(attachementName));
             multipart.addBodyPart(bodyPart);
             message.setContent(multipart);

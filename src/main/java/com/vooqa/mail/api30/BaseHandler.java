@@ -19,9 +19,10 @@ public abstract class BaseHandler implements HttpHandler {
         final String method = httpExchange.getRequestMethod();
         if ("POST".equals(method)) {
             try {
-                doPost(httpExchange);
-                httpExchange.sendResponseHeaders(200, 0);
-                httpExchange.close();
+                if (doPost(httpExchange)) {
+                    httpExchange.sendResponseHeaders(200, 0);
+                    httpExchange.close();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 String error = e.getMessage() != null ? e.getMessage() : e.toString();
@@ -38,6 +39,6 @@ public abstract class BaseHandler implements HttpHandler {
         }
     }
 
-    protected abstract void doPost(HttpExchange httpExchange) throws Exception;
+    protected abstract boolean doPost(HttpExchange httpExchange) throws Exception;
 
 }

@@ -1,10 +1,10 @@
 package com.vooqa.mail.api30;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
+import com.vooqa.mail.Configuration;
+import com.vooqa.mail.Mail;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLDecoder;
@@ -13,44 +13,20 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MailHandler implements HttpHandler {
+public class MailHandler extends BaseHandler {
+
+    private final static SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+
+    public MailHandler(Configuration configuration) {
+        super(configuration);
+    }
 
     @Override
-    public void handle(HttpExchange httpExchange) throws IOException {
-        final String method = httpExchange.getRequestMethod();
-        if ("POST".equals(method)) {
-            Map<String, String> parameters = null;
-            try {
-                parameters = readParameters(httpExchange.getRequestBody());
-            } catch (Exception e) {
-                e.printStackTrace();
-                httpExchange.sendResponseHeaders(500, 0);
-                return;
-            }
-            if (parameters != null && parameters.size() > 0) {
-                try {
-                    //agent.sendEmail(printEmailText(parameters));
-                } catch (Exception e){
-                    System.out.println(String.format("[%s] EXCEPTION ------------------------- ", sdf.format(new Date())));
-                    e.printStackTrace();
-                    String error = e.getMessage() != null ? e.getMessage() : e.toString();
-                    byte[] respBody = error.getBytes();
-                    httpExchange.sendResponseHeaders(500, respBody.length);
-                    httpExchange.getResponseBody().write(respBody);
-                    httpExchange.close();
-                    return;
-                }
-            }
-            httpExchange.sendResponseHeaders(200, 0);
-            httpExchange.close();
-            return;
-        } else if ("GET".equals(method)) {
-            byte[] respBody = "mail-agent: ON".getBytes();
-            httpExchange.sendResponseHeaders(200, respBody.length);
-            httpExchange.getResponseBody().write(respBody);
-            httpExchange.close();
+    protected void doPost(HttpExchange httpExchange) throws Exception {
+        Map<String, String> parameters = readParameters(httpExchange.getRequestBody());
+        if (parameters != null && parameters.size() > 0) {
+            Mail.agent(configuration).sendMessage(printEmailText(parameters));
         }
-        httpExchange.sendResponseHeaders(404, 0);
     }
 
     private Map<String, String> readParameters(InputStream in) throws Exception {
@@ -70,8 +46,6 @@ public class MailHandler implements HttpHandler {
         }
         return result;
     }
-
-    SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 
     private String printEmailText(Map<String, String> params) {
 

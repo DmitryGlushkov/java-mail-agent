@@ -15,8 +15,8 @@ public class Server {
         agent = mailAgent;
         server = HttpServer.create();
         server.bind(new InetSocketAddress(PORT), 0);
-        server.createContext("api30/mail", Api_30.mail());
-        server.createContext("api30/excel",  Api_30.excel());
+        server.createContext("/api30/mail", Api_30.mail());
+        server.createContext("/api30/excel",  Api_30.excel());
     }
 
     public void start() {

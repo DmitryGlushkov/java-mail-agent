@@ -29,7 +29,7 @@ public class MailHandler implements HttpHandler {
             }
             if (parameters != null && parameters.size() > 0) {
                 try {
-                    agent.sendEmail(printEmailText(parameters));
+                    //agent.sendEmail(printEmailText(parameters));
                 } catch (Exception e){
                     System.out.println(String.format("[%s] EXCEPTION ------------------------- ", sdf.format(new Date())));
                     e.printStackTrace();

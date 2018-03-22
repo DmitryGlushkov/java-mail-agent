@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 
 import java.io.InputStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class FormDataMgr {
 
@@ -11,7 +12,7 @@ public class FormDataMgr {
     private final static String BOUNDARY_PREFIX = "--";
     private final static String CRLF = "\r\n";
 
-    public static List<Part> handle(final HttpExchange httpExchange) throws Exception {
+    public static Map<String, Part> handle(final HttpExchange httpExchange) throws Exception {
 
         final String contentType = httpExchange.getRequestHeaders().getFirst("Content-type");
         if (contentType.contains("multipart/form-data")) {
@@ -26,9 +27,9 @@ public class FormDataMgr {
                 int position = indexOf(_b, headerDelimiter);
                 Map<String, String> params = getHeaderParameters(new String(Arrays.copyOfRange(_b, 0, position)));
                 byte[] partData = Arrays.copyOfRange(_b, position + 4, _b.length);  // -2: CRLF in the end of data
-                partsList.add(new Part(params.get("name"), partData));
+                partsList.add(new Part(params.get("name"), partData, params.get("filename")));
             }
-            return partsList;
+            return partsList.stream().collect(Collectors.toMap(p -> p.name, p -> p));
         }
         return null;
     }
@@ -111,6 +112,7 @@ public class FormDataMgr {
                 result[p++] = buffer[i];
             }
         }
+        is.close();
         return result;
     }
 
